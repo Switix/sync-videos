@@ -1,7 +1,11 @@
 package com.switix.roomservice.controller;
 
+import com.switix.roomservice.exception.RoomNotFoundException;
 import com.switix.roomservice.model.Room;
 import com.switix.roomservice.repository.RoomRepository;
+import com.switix.roomservice.service.RoomService;
+import com.switix.roomservice.service.RoomServiceImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,27 +16,27 @@ import java.util.UUID;
 public class RoomController {
 
 
-    private final RoomRepository roomRepository;
+    private final RoomService roomService;
 
-    public RoomController(RoomRepository roomRepository) {
-        this.roomRepository = roomRepository;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
     }
 
     @PostMapping("/create")
     public Room createRoom() {
-        Room room = new Room();
-        room.setName("test");
-        return roomRepository.save(room);
+        return roomService.createRoom();
     }
 
-    @GetMapping
-    public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+    @GetMapping("/exists/{roomId}")
+    public ResponseEntity<Boolean> roomExists(@PathVariable("roomId") String roomId) {
+        try {
+            UUID uuid = UUID.fromString(roomId);
+            roomService.getRoomById(uuid);
+            return ResponseEntity.ok(true);
+        } catch (IllegalArgumentException | RoomNotFoundException e) {
+            return ResponseEntity.ok(false);
+        }
     }
 
-    @GetMapping("/{id}")
-    public Room getRoomById(@PathVariable UUID id) {
-        return roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found"));
-    }
 }
 
