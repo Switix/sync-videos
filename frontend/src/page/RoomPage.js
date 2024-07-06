@@ -36,7 +36,7 @@ function RoomPage() {
         };
         const sendJoinNotification = () => {
             if (stompClientRef.current) {
-                stompClientRef.current.send(`/app/joinRoom/${roomId}`, {}, JSON.stringify({ username: 'tempUser' }));
+                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username: 'tempUser' }));
             }
         };
 

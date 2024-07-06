@@ -20,7 +20,7 @@ public class WebSocketController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/joinRoom/{roomId}")
+    @MessageMapping("/room/{roomId}/join")
     @SendTo("/topic/room/{roomId}")
     public RoomNotification<String> joinRoom(AppUser user) {
         return new RoomNotification<>(RoomNotificationType.USER_JOINED, user.getUsername() + " joined the room");
@@ -42,7 +42,6 @@ public class WebSocketController {
 
         RoomNotification<String> pauseNotification = new RoomNotification<>(RoomNotificationType.VIDEO_PLAY, payload.get("currentSeek"));
         messagingTemplate.convertAndSend("/topic/room/" + roomId, pauseNotification);
-
         //RoomNotification<String> syncNotification = new RoomNotification<>(RoomNotificationType.SYNC_CHECK, payload.get("currentSeek"));
         //messagingTemplate.convertAndSend("/topic/room/" + roomId, syncNotification);
     }
