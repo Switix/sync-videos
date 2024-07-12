@@ -8,12 +8,18 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="room-service" />
+        <module name="authentication-service" />
         <module name="user-service" />
+        <module name="discovery-service" />
+        <module name="gateway-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="authentication-service" options="" />
+      <module name="discovery-service" options="" />
+      <module name="gateway-service" options="" />
       <module name="room-service" options="" />
       <module name="user-service" options="" />
     </option>

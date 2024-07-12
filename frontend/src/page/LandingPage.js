@@ -1,12 +1,12 @@
 import React from 'react';
-import axios from 'axios';
+import api from '../service/api';
 import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
     const navigate = useNavigate();
 
     const createRoom = () => {
-        axios.post('http://localhost:8080/rooms/create', {})
+        api.post('http://localhost:8080/rooms/create', {})
             .then(response => {
                 console.log('Room created:', response.data);
                 const createdRoomId = response.data.id;

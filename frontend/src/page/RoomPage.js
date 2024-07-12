@@ -4,7 +4,8 @@ import { NotificationTypes } from '../constants/RoomNotificationTypes';
 import ReactPlayer from 'react-player';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
-import axios from 'axios';
+import api from '../service/api';
+import { useSelector } from 'react-redux';
 
 function RoomPage() {
     const { roomId } = useParams();
@@ -20,6 +21,7 @@ function RoomPage() {
 
     const [isPlaying, setIsPlaying] = useState(false);
 
+    const username = useSelector(state => state.user.username);
 
     const SEEK_TRESHOLD = 0.5 // in seconds
 
@@ -27,7 +29,7 @@ function RoomPage() {
 
         const checkRoomExists = async (roomId) => {
             try {
-                const response = await axios.get(`http://localhost:8080/rooms/exists/${roomId}`);
+                const response = await api.get(`http://localhost:8080/rooms/exists/${roomId}`);
                 return response.data;
             } catch (error) {
                 console.error('Error checking room existence', error);
@@ -36,7 +38,7 @@ function RoomPage() {
         };
         const sendJoinNotification = () => {
             if (stompClientRef.current) {
-                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username: 'tempUser' }));
+                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username }));
             }
         };
 
@@ -77,7 +79,7 @@ function RoomPage() {
         };
 
         const fetchInitialQueue = (roomId) => {
-            axios.get(`http://localhost:8080/rooms/${roomId}/queue`)
+            api.get(`http://localhost:8080/rooms/${roomId}/queue`)
                 .then(response => {
                     setQueue(response.data);
                 })
@@ -122,7 +124,7 @@ function RoomPage() {
 
 
     const addVideoToQueue = () => {
-        axios.post(`http://localhost:8080/rooms/addVideo?roomId=${roomId}`, videoUrl, {
+        api.post(`http://localhost:8080/rooms/addVideo?roomId=${roomId}`, videoUrl, {
             headers: {
                 'Content-Type': 'text/plain'
             }
@@ -152,14 +154,14 @@ function RoomPage() {
     const handlePlay = () => {
         console.log('play')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ username: 'tempUser', currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ username, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
     const handlePause = () => {
         console.log('pause')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ username: 'tempUser', currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ username, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
