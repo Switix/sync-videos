@@ -21,15 +21,15 @@ function RoomPage() {
 
     const [isPlaying, setIsPlaying] = useState(false);
 
-    const username = useSelector(state => state.user.username);
+    const user =  useSelector(state => state.user);
 
     const SEEK_TRESHOLD = 0.5 // in seconds
 
-    useEffect(() => {
-
+    useEffect( () => {
+       
         const checkRoomExists = async (roomId) => {
             try {
-                const response = await api.get(`http://localhost:8080/rooms/exists/${roomId}`);
+                const response = await api.get(`http://localhost:8080/rooms/exists/${roomId}`)
                 return response.data;
             } catch (error) {
                 console.error('Error checking room existence', error);
@@ -38,7 +38,7 @@ function RoomPage() {
         };
         const sendJoinNotification = () => {
             if (stompClientRef.current) {
-                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username }));
+                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username: user.username }));
             }
         };
 
@@ -90,7 +90,8 @@ function RoomPage() {
 
         checkRoomExists(roomId)
             .then(exists => {
-                if (exists) {
+                if (exists ) {
+                    if(user == null) return;
                     // Connect to WebSocket server
                     const socket = new SockJS('http://localhost:8080/ws');
                     const client = Stomp.over(socket);
@@ -119,7 +120,7 @@ function RoomPage() {
             }
         };
         // eslint-disable-next-line
-    }, []);
+    }, [user]);
 
 
 
@@ -154,20 +155,21 @@ function RoomPage() {
     const handlePlay = () => {
         console.log('play')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ username, currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ username: user.username, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
     const handlePause = () => {
         console.log('pause')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ username, currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ username: user.username, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
-
+ 
     return (
         <div>
+             {user ? <p>Username: {user.username}</p> : <p>No user logged in</p>}
             <h2>Room: {roomId}</h2>
             <input
                 type="text"
