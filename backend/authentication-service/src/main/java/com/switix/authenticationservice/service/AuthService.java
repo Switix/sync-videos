@@ -4,7 +4,7 @@ import com.switix.authenticationservice.exception.BadCredentialsException;
 import com.switix.authenticationservice.exception.UserAlreadyExistsException;
 import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
-import com.switix.authenticationservice.model.UserDto;
+import com.switix.authenticationservice.model.UserVO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +35,7 @@ public class AuthService {
             }
         }
 
-        UserDto registeredUser = restTemplate.postForObject("http://user-service/users", request, UserDto.class);
+        UserVO registeredUser = restTemplate.postForObject("http://user-service/users", request, UserVO.class);
         String accessToken = jwtUtil.createToken(registeredUser.getId(), registeredUser.getRole(), "ACCESS");
         String refreshToken = jwtUtil.createToken(registeredUser.getId(), registeredUser.getRole(), "REFRESH");
 
@@ -45,8 +45,8 @@ public class AuthService {
     public AuthResponse login(AuthRequest request) {
 
         try {
-            ResponseEntity<UserDto> response = restTemplate.getForEntity("http://user-service/users?username=" + request.getUsername(), UserDto.class);
-            UserDto user = response.getBody();
+            ResponseEntity<UserVO> response = restTemplate.getForEntity("http://user-service/users?username=" + request.getUsername(), UserVO.class);
+            UserVO user = response.getBody();
 
             if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                 throw new BadCredentialsException("Bad credentials");

@@ -25,16 +25,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse findById(Long id) {
+    public UserDto findById(Long id) {
 
         AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotfoundException("User not found"));
-        UserResponse userResponse = new UserResponse();
-        userResponse.setUsername(appUser.getUsername());
-        userResponse.setUserColor(appUser.getUserColor());
-        userResponse.setId(appUser.getId().toString());
-        userResponse.setRole(appUser.getRole().toString());
-        return userResponse;
+        UserDto userDto = new UserDto();
+        userDto.setUsername(appUser.getUsername());
+        userDto.setUserColor(appUser.getUserColor());
+        userDto.setId(appUser.getId().toString());
+        userDto.setRole(appUser.getRole().toString());
+        return userDto;
     }
 
     @Override
@@ -43,16 +43,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findByUsername(String username) {
+    public UserVO findByUsername(String username) {
         AppUser appUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotfoundException("User not found"));
-        UserDto userDto = new UserDto();
-        userDto.setUsername(appUser.getUsername());
-        userDto.setPassword(appUser.getPassword());
-        userDto.setUserColor(appUser.getUserColor());
-        userDto.setId(appUser.getId().toString());
-        userDto.setRole(appUser.getRole().toString());
-        return userDto;
+        UserVO userVO = new UserVO();
+        userVO.setUsername(appUser.getUsername());
+        userVO.setPassword(appUser.getPassword());
+        userVO.setUserColor(appUser.getUserColor());
+        userVO.setId(appUser.getId().toString());
+        userVO.setRole(appUser.getRole().toString());
+        return userVO;
     }
 
     private AppUser createUser(UserRegisterRequest userRegisterRequest) {

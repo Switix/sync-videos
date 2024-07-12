@@ -2,9 +2,9 @@ package com.switix.userservice.controller;
 
 import com.switix.userservice.exception.UserNotfoundException;
 import com.switix.userservice.model.AppUser;
-import com.switix.userservice.model.UserDto;
+import com.switix.userservice.model.UserVO;
 import com.switix.userservice.model.UserRegisterRequest;
-import com.switix.userservice.model.UserResponse;
+import com.switix.userservice.model.UserDto;
 import com.switix.userservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,10 +25,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
         try {
-            UserResponse userResponse = userService.findById(id);
-            return ResponseEntity.ok(userResponse);
+            UserDto userDto = userService.findById(id);
+            return ResponseEntity.ok(userDto);
         } catch (UserNotfoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
@@ -43,10 +43,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<UserDto> getUserByUsername(@RequestParam("username") String username) {
+    public ResponseEntity<UserVO> getUserByUsername(@RequestParam("username") String username) {
         try {
-            UserDto userDto = userService.findByUsername(username);
-            return ResponseEntity.ok(userDto);
+            UserVO userVO = userService.findByUsername(username);
+            return ResponseEntity.ok(userVO);
         } catch (UserNotfoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
