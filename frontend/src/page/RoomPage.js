@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { NotificationTypes } from '../constants/RoomNotificationTypes';
+import RoomNotificationType from '../constants/RoomNotificationTypes';
+import RoomNotification from '../model/RoomNotification';
 import ReactPlayer from 'react-player';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import api from '../service/api';
 import { useSelector } from 'react-redux';
+
 
 function RoomPage() {
     const { roomId } = useParams();
@@ -13,6 +15,7 @@ function RoomPage() {
     const [notifications, setNotifications] = useState([]);
 
     const stompClientRef = useRef(null);
+    const notificationListRef = useRef(null);
 
     const playerRef = useRef(null);
     const [videoUrl, setVideoUrl] = useState('');
@@ -21,12 +24,12 @@ function RoomPage() {
 
     const [isPlaying, setIsPlaying] = useState(false);
 
-    const user =  useSelector(state => state.user);
+    const user = useSelector(state => state.user);
 
     const SEEK_TRESHOLD = 0.5 // in seconds
 
-    useEffect( () => {
-       
+    useEffect(() => {
+
         const checkRoomExists = async (roomId) => {
             try {
                 const response = await api.get(`http://localhost:8080/rooms/exists/${roomId}`)
@@ -38,42 +41,58 @@ function RoomPage() {
         };
         const sendJoinNotification = () => {
             if (stompClientRef.current) {
-                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify({ username: user.username }));
+                stompClientRef.current.send(`/app/room/${roomId}/join`, {}, JSON.stringify(user));
             }
         };
 
         const subscribeToRoom = (roomId) => {
             if (stompClientRef.current) {
                 stompClientRef.current.subscribe(`/topic/room/${roomId}`, (message) => {
-                    const notification = JSON.parse(message.body);
+                    const serverNotification = JSON.parse(message.body);
+                    const roomNotification = new RoomNotification();
 
-                    switch (notification.type) {
-                        case NotificationTypes.VIDEO_ADDED:
-                            const videoUrl = notification.message;
+                    switch (serverNotification.type) {
+                        case RoomNotificationType.VIDEO_ADDED:
+                            const videoUrl = serverNotification.message;
                             setQueue((prevQueue) => [...prevQueue, videoUrl]);
+
+                            roomNotification.setType(RoomNotificationType.VIDEO_ADDED);
+                            roomNotification.setMessage("Added Video");
+                            roomNotification.setIssuer(serverNotification.issuer);
                             break;
-                        case NotificationTypes.USER_JOINED:
+                        case RoomNotificationType.USER_JOINED:
+                            roomNotification.setType(RoomNotificationType.USER_JOINED);
+                            roomNotification.setMessage("Joined the room");
+                            roomNotification.setIssuer(serverNotification.issuer);
                             break;
-                        case NotificationTypes.VIDEO_PLAY:
+                        case RoomNotificationType.VIDEO_PLAY:
                             setIsPlaying(true);
-                            if (Math.abs(playerRef.current.getCurrentTime() - notification.message) > SEEK_TRESHOLD) {
-                                playerRef.current.seekTo(notification.message, 'seconds', true)
+                            if (Math.abs(playerRef.current.getCurrentTime() - serverNotification.message) > SEEK_TRESHOLD) {
+                                playerRef.current.seekTo(serverNotification.message, 'seconds', true)
                             }
+
+                            roomNotification.setType(RoomNotificationType.VIDEO_PLAY);
+                            roomNotification.setMessage(`Video resumed with seek: ${serverNotification.message}`);
+                            roomNotification.setIssuer(serverNotification.issuer);
                             break;
-                        case NotificationTypes.VIDEO_PAUSE:
+                        case RoomNotificationType.VIDEO_PAUSE:
                             setIsPlaying(false);
+
+                            roomNotification.setType(RoomNotificationType.VIDEO_PAUSE);
+                            roomNotification.setMessage(`Video paused with seek: ${serverNotification.message}`);
+                            roomNotification.setIssuer(serverNotification.issuer);
                             break;
-                        case NotificationTypes.SYNC_CHECK:
-                            if (Math.abs(playerRef.current.getCurrentTime() - notification.message) > SEEK_TRESHOLD) {
-                                playerRef.current.seekTo(notification.message, 'seconds', isPlaying)
+                        case RoomNotificationType.SYNC_CHECK:
+                            if (Math.abs(playerRef.current.getCurrentTime() - serverNotification.message) > SEEK_TRESHOLD) {
+                                playerRef.current.seekTo(serverNotification.message, 'seconds', isPlaying)
                             }
                             break;
                         default:
-                            console.warn('Unhandled notification type:', notification.type);
+                            console.warn('Unhandled notification type:', serverNotification.type);
                             break;
                     }
 
-                    setNotifications((prevNotifications) => [...prevNotifications, notification]);
+                    setNotifications((prevNotifications) => [...prevNotifications, roomNotification]);
                 });
             }
         };
@@ -90,8 +109,8 @@ function RoomPage() {
 
         checkRoomExists(roomId)
             .then(exists => {
-                if (exists ) {
-                    if(user == null) return;
+                if (exists) {
+                    if (user == null) return;
                     // Connect to WebSocket server
                     const socket = new SockJS('http://localhost:8080/ws');
                     const client = Stomp.over(socket);
@@ -123,28 +142,26 @@ function RoomPage() {
     }, [user]);
 
 
-
-    const addVideoToQueue = () => {
-        api.post(`http://localhost:8080/rooms/addVideo?roomId=${roomId}`, videoUrl, {
-            headers: {
-                'Content-Type': 'text/plain'
-            }
-        })
-            .then(response => {
-                setVideoUrl('');
-            })
-            .catch(error => {
-                console.error('There was an error adding the video!', error);
-            });
-    };
-
-
     useEffect(() => {
         if (currentVideo != null)
             return;
         playNextVideo();
         // eslint-disable-next-line
     }, [queue]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [notifications]);
+
+    const scrollToBottom = () => {
+        notificationListRef.current.scrollTop = notificationListRef.current.scrollHeight;
+    };
+
+    const addVideoToQueue = () => {
+        if (stompClientRef.current) {
+            stompClientRef.current.send(`/app/room/${roomId}/addVideo`, {}, JSON.stringify({ user, videoUrl }));
+        }
+    };
 
     const playNextVideo = () => {
         const nextVideo = queue.shift();
@@ -155,21 +172,23 @@ function RoomPage() {
     const handlePlay = () => {
         console.log('play')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ username: user.username, currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/play`, {}, JSON.stringify({ user, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
     const handlePause = () => {
         console.log('pause')
         if (stompClientRef.current) {
-            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ username: user.username, currentSeek: playerRef.current.getCurrentTime() }));
+            stompClientRef.current.send(`/app/room/${roomId}/pause`, {}, JSON.stringify({ user, currentSeek: playerRef.current.getCurrentTime() }));
         }
 
     }
- 
+
     return (
         <div>
-             {user ? <p>Username: {user.username}</p> : <p>No user logged in</p>}
+            {user ? <p>Username:
+                <span style={{ color: user.userColor }}> {user.username}</span>
+            </p> : <p>No user logged in</p>}
             <h2>Room: {roomId}</h2>
             <input
                 type="text"
@@ -203,9 +222,15 @@ function RoomPage() {
             </div>
             <div>
                 <h3>Notifications</h3>
-                <ul>
+                <ul ref={notificationListRef} style={{ maxHeight: '300px', overflowY: 'scroll', padding: '10px', border: '1px solid #ccc' }}>
                     {notifications.map((notification, index) => (
-                        <li key={index}>{notification.type}: {notification.message}</li>
+                        <li key={index} style={{ marginBottom: '10px' }}>
+                            <div>
+                                {`${notification.type} [`}
+                                <span style={{ color: notification.issuer.userColor }}>{notification.issuer.username}</span>
+                                {`]: ${notification.message}`}
+                            </div>
+                        </li>
                     ))}
                 </ul>
             </div>

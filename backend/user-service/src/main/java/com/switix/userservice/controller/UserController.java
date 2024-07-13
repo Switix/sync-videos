@@ -2,9 +2,9 @@ package com.switix.userservice.controller;
 
 import com.switix.userservice.exception.UserNotfoundException;
 import com.switix.userservice.model.AppUser;
-import com.switix.userservice.model.UserVO;
-import com.switix.userservice.model.UserRegisterRequest;
 import com.switix.userservice.model.UserDto;
+import com.switix.userservice.model.UserRegisterRequest;
+import com.switix.userservice.model.UserVO;
 import com.switix.userservice.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

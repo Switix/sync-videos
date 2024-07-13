@@ -7,7 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class AppUser {
+public class UserDto {
+    private String id;
     private String username;
-
+    private String userColor;
+    private String role;
 }

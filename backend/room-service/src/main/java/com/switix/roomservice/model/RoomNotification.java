@@ -12,4 +12,5 @@ import lombok.Setter;
 public class RoomNotification<T> {
     private RoomNotificationType type;
     private T message;
+    private UserDto issuer;
 }
