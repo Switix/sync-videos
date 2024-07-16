@@ -10,7 +10,6 @@ function LandingPage() {
             .then(response => {
                 console.log('Room created:', response.data);
                 const createdRoomId = response.data.id;
-                // Navigate to the created room
                 navigate(`/room/${createdRoomId}`);
             })
             .catch(error => {
@@ -19,8 +18,13 @@ function LandingPage() {
     };
 
     return (
-        <div>
-            <button onClick={createRoom}>Create Room</button>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-900">
+            <button
+                onClick={createRoom}
+                className="px-14 py-7 bg-red-800 hover:bg-red-900 text-neutral-50 font-semibold rounded-full shadow-md focus:outline-none text-5xl"
+            >
+                Create Room
+            </button>
         </div>
     );
 }

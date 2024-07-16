@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RoomPage from './page/RoomPage';
 import LandingPage from './page/LandingPage';
 import ErrorPage from './page/ErrorPage';
+import Header from './component/Header'; 
 
 import { persistor, store } from './redux/store';
 import { Provider } from 'react-redux';
@@ -13,13 +14,15 @@ function App() {
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <Router>
-                    <Routes>
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/room/:roomId" element={<RoomPage />} />
-
-                        <Route path="/404" element={<ErrorPage />} />
-                        <Route path="*" element={<ErrorPage />} />
-                    </Routes>
+                <Header />
+                <div className="pt-14"> {/* Add padding top to avoid overlap */}
+                        <Routes>
+                            <Route path="/" element={<LandingPage />} />
+                            <Route path="/room/:roomId" element={<RoomPage />} />
+                            <Route path="/404" element={<ErrorPage />} />
+                            <Route path="*" element={<ErrorPage />} />
+                        </Routes>
+                    </div>
                 </Router>
             </PersistGate>
         </Provider>
