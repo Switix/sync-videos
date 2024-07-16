@@ -5,5 +5,6 @@ public enum RoomNotificationType {
     VIDEO_ADDED,
     VIDEO_PAUSE,
     VIDEO_PLAY,
-    SYNC_CHECK
+    SYNC_CHECK,
+    USER_LEFT
 }

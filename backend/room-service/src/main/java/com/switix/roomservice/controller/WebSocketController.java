@@ -25,8 +25,18 @@ public class WebSocketController {
 
     @MessageMapping("/room/{roomId}/join")
     @SendTo("/topic/room/{roomId}")
-    public RoomNotification<String> joinRoom(@Payload UserDto user) {
-        return new RoomNotification<>(RoomNotificationType.USER_JOINED, null, user);
+    public RoomNotification<String> joinRoom(@Payload UserDto user, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
+        roomService.addUserToRoom(roomId, user);
+        return new RoomNotification<>(RoomNotificationType.USER_JOINED, "", user);
+    }
+
+    @MessageMapping("/room/{roomId}/leave")
+    @SendTo("/topic/room/{roomId}")
+    public RoomNotification<String> leaveRoom(@Payload UserDto user, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
+        roomService.removeUserFromRoom(roomId, user);
+        return new RoomNotification<>(RoomNotificationType.USER_LEFT, "", user);
     }
 
     @MessageMapping("/room/{roomId}/addVideo")
@@ -42,23 +52,34 @@ public class WebSocketController {
 
     @MessageMapping("/room/{roomId}/pause")
     @SendTo("/topic/room/{roomId}")
-    public RoomNotification<String> playVideo(JsonNode payload, @DestinationVariable("roomId") String roomId) {
+    public RoomNotification<Double> playVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
         UserDto userDto = extractUserDto(payload.get("user"));
+        boolean isPlaying = payload.get("isPlaying").asBoolean();
+        double currentSeek = payload.get("currentSeek").asDouble();
+
+        roomService.setIsPlaying(roomId, isPlaying);
+        roomService.setCurrentSeek(roomId, currentSeek);
         return new RoomNotification<>(
                 RoomNotificationType.VIDEO_PAUSE,
-                payload.get("currentSeek").asText(),
+                currentSeek,
                 userDto
         );
     }
 
     @MessageMapping("/room/{roomId}/play")
     @SendTo("/topic/room/{roomId}")
-    public RoomNotification<String> pauseVideo(JsonNode payload, @DestinationVariable("roomId") String roomId) {
-
+    public RoomNotification<Double> pauseVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
         UserDto userDto = extractUserDto(payload.get("user"));
+        boolean isPlaying = payload.get("isPlaying").asBoolean();
+        double currentSeek = payload.get("currentSeek").asDouble();
+
+        roomService.setIsPlaying(roomId, isPlaying);
+        roomService.setCurrentSeek(roomId, currentSeek);
         return new RoomNotification<>(
                 RoomNotificationType.VIDEO_PLAY,
-                payload.get("currentSeek").asText(),
+                currentSeek,
                 userDto
         );
     }
