@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.switix.roomservice.model.RoomNotification;
 import com.switix.roomservice.model.RoomNotificationType;
 import com.switix.roomservice.model.UserDto;
+import com.switix.roomservice.model.Video;
 import com.switix.roomservice.service.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -41,13 +42,13 @@ public class WebSocketController {
 
     @MessageMapping("/room/{roomId}/addVideo")
     @SendTo("/topic/room/{roomId}")
-    public RoomNotification<String> addVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
+    public RoomNotification<Video> addVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
         UUID roomId = UUID.fromString(roomIdStr);
         UserDto userDto = extractUserDto(payload.get("user"));
-        String videoUrl = payload.get("videoUrl").asText();
-        roomService.addVideoToQueue(roomId, videoUrl);
+        Video video = extractVideo(payload.get("videoData"));
+        roomService.addVideoToQueue(roomId, video);
 
-        return new RoomNotification<>(RoomNotificationType.VIDEO_ADDED, videoUrl, userDto);
+        return new RoomNotification<>(RoomNotificationType.VIDEO_ADDED, video, userDto);
     }
 
     @MessageMapping("/room/{roomId}/pause")
@@ -87,6 +88,15 @@ public class WebSocketController {
     private UserDto extractUserDto(JsonNode userJson) {
         try {
             return objectMapper.treeToValue(userJson, UserDto.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Video extractVideo(JsonNode videoJson) {
+        try {
+            return objectMapper.treeToValue(videoJson, Video.class);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

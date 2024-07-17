@@ -5,8 +5,13 @@ import { useSelector } from 'react-redux';
 function Header() {
     const user = useSelector(state => state.user);
 
+    const handleEasterEgg = (e) => {
+        e.preventDefault();
+        window.alert("jfj 100%");
+    };
+
     return (
-        <header className="fixed top-0 left-0 right-0 bg-stone-950 shadow-md z-50">
+        <header className="sticky top-0  bg-stone-950 shadow-md z-50">
             <div className="mx-auto py-2 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                 <Link to="/" className="text-2xl font-bold">
                     <span className='text-red-600'>Sync </span>
@@ -19,25 +24,25 @@ function Header() {
 
                             {user.role === 'TEMPORARY_USER' ? (
                                 <>
-                                    <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-green-600 hover:bg-green-700">
+                                    <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-green-600 hover:bg-green-700" onClick={handleEasterEgg}>
                                         Log In
                                     </Link>
-                                    <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-neutral-700 hover:bg-neutral-800">
+                                    <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-neutral-700 hover:bg-neutral-800" onClick={handleEasterEgg}>
                                         Sign Up
                                     </Link>
                                 </>
                             ) : (
-                                <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-red-600 hover:bg-red-700">
+                                <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-red-600 hover:bg-red-700" onClick={handleEasterEgg}>
                                     Logout
                                 </Link>
                             )}
                         </>
                     ) : (
                         <>
-                            <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-green-600 hover:bg-green-700">
+                            <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-green-600 hover:bg-green-700" onClick={handleEasterEgg}>
                                 Log In
                             </Link>
-                            <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-neutral-700 hover:bg-neutral-800">
+                            <Link to="/" className="px-3 py-2 text-md font-medium text-white text-center rounded-md bg-neutral-700 hover:bg-neutral-800" onClick={handleEasterEgg}>
                                 Sign Up
                             </Link>
                         </>

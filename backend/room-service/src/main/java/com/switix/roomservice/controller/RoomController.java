@@ -3,7 +3,7 @@ package com.switix.roomservice.controller;
 import com.switix.roomservice.exception.RoomNotFoundException;
 import com.switix.roomservice.model.Room;
 import com.switix.roomservice.model.RoomState;
-import com.switix.roomservice.model.VideoUrlDto;
+import com.switix.roomservice.model.Video;
 import com.switix.roomservice.service.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +44,11 @@ public class RoomController {
 
     }
 
-    @PostMapping("/{roomId}/state/currentVideoUrl")
-    public ResponseEntity<RoomState> setCurrentVideoUrl(@PathVariable("roomId") String roomIdStr, @RequestBody VideoUrlDto videoUrlDto) {
+    @PostMapping("/{roomId}/state/currentVideo")
+    public ResponseEntity<Void> setCurrentVideoUrl(@PathVariable("roomId") String roomIdStr, @RequestBody Video video) {
         UUID roomId = UUID.fromString(roomIdStr);
-        roomService.setCurrentVideoUrl(roomId, videoUrlDto.getCurrentVideoUrl());
-        roomService.setCurrentSeek(roomId,0);
+        roomService.setCurrentVideo(roomId, video);
+        roomService.setCurrentSeek(roomId, 0);
         return ResponseEntity.ok().build();
 
     }

@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VideoUrlDto {
-    private String currentVideoUrl;
+public class Video {
+    private String thumbnail;
+    private String title;
+    private String author;
+    private String url;
 }

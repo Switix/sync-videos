@@ -12,13 +12,13 @@ import java.util.List;
 @Getter
 @Setter
 public class RoomState {
-    private String currentVideoUrl;
+    private Video currentVideo;
     private double currentSeek;
     @JsonIgnore
     private Instant seekUpdatedAt;
     private Boolean isPlaying;
     private List<UserDto> users;
-    private List<String> queue;
+    private List<Video> queue;
 
     public RoomState() {
         this.users = new ArrayList<>();

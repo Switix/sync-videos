@@ -18,7 +18,7 @@ function LandingPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-neutral-900">
+        <div className="h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center bg-neutral-900">
             <button
                 onClick={createRoom}
                 className="px-14 py-7 bg-red-800 hover:bg-red-900 text-neutral-50 font-semibold rounded-full shadow-md focus:outline-none text-5xl"

@@ -4,6 +4,7 @@ import com.switix.roomservice.exception.RoomNotFoundException;
 import com.switix.roomservice.model.Room;
 import com.switix.roomservice.model.RoomState;
 import com.switix.roomservice.model.UserDto;
+import com.switix.roomservice.model.Video;
 import com.switix.roomservice.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 
@@ -42,10 +43,10 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void setCurrentVideoUrl(UUID roomId, String currentVideoUrl) {
+    public void setCurrentVideo(UUID roomId, Video currentVideo) {
         RoomState roomState = getRoomState(roomId);
-        roomState.setCurrentVideoUrl(currentVideoUrl);
-        roomState.getQueue().removeIf(url -> url.equals(currentVideoUrl));
+        roomState.setCurrentVideo(currentVideo);
+        roomState.getQueue().removeIf(video -> video.getUrl().equals(currentVideo.getUrl()));
     }
 
     @Override
@@ -59,8 +60,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public void addVideoToQueue(UUID roomId, String videoUrl) {
-        getRoomState(roomId).getQueue().add(videoUrl);
+    public void addVideoToQueue(UUID roomId, Video video) {
+        getRoomState(roomId).getQueue().add(video);
     }
 
     @Override
