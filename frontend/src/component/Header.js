@@ -26,6 +26,7 @@ function Header() {
         dispatch(clearUser());
         dispatch(clearAccessToken());
         dispatch(clearRefreshToken());
+
         navigate('/');
     };
 
