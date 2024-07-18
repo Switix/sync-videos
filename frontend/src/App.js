@@ -14,7 +14,7 @@ function App() {
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <Router>
-                    <div class="flex flex-col h-screen bg-neutral-900">
+                    <div class="flex flex-col h-screen bg-neutral-900 space-y-4">
                         <Header />
                         <Routes>
                             <Route path="/" element={<LandingPage />} />

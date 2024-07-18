@@ -9,6 +9,7 @@ import api from '../service/api';
 import axios from 'axios'
 import { useSelector } from 'react-redux';
 import QueuedVideo from '../component/QueuedVideo';
+import UserItem from '../component/UserItem';
 
 function RoomPage() {
     const { roomId } = useParams();
@@ -314,7 +315,7 @@ function RoomPage() {
 
 
     return (
-        <div className="p-4  bg-neutral-900  text-white  flex flex-col">
+        <div className="px-4    bg-neutral-900  text-white  flex flex-col">
             <div className=" flex  ">
                 <div className="w-[calc(100%-18rem)] pr-4 ">
                     <div className="relative bg-black rounded-3xl " style={{ paddingTop: '56.25%' }}>
@@ -387,7 +388,7 @@ function RoomPage() {
                     </div>
 
                     <div className='flex-grow'>
-                        <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[30rem] overflow-y-auto">
+                        <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[21rem] overflow-y-auto">
                             {/* queue list */}
                             {activeTab === 'queue' && queue.length > 0 ? (
                                 queue.map((videoData, index) => (
@@ -424,10 +425,10 @@ function RoomPage() {
                                 </svg>
                                 {roomUsers.length}
                             </h3>
-                            <ul className="bg-neutral-800 p-2 rounded max-h-44 overflow-y-auto">
+                            <ul className="p-2 rounded max-h-44 overflow-y-auto grid grid-cols-2 gap-2">
                                 {roomUsers.map((user, index) => (
-                                    <li style={{ color: user.userColor }} key={index} className="border-b border-neutral-700 last:border-0 py-2">
-                                        {user.username}
+                                    <li key={index}>
+                                        <UserItem user={user} />
                                     </li>
                                 ))}
                             </ul>
