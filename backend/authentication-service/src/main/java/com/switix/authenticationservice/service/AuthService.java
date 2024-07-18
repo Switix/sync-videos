@@ -52,8 +52,8 @@ public class AuthService {
                 throw new BadCredentialsException("Bad credentials");
             }
 
-            String accessToken = jwtUtil.createToken(user.getUsername(), user.getRole(), "ACCESS");
-            String refreshToken = jwtUtil.createToken(user.getUsername(), user.getRole(), "REFRESH");
+            String accessToken = jwtUtil.createToken(user.getId(), user.getRole(), "ACCESS");
+            String refreshToken = jwtUtil.createToken(user.getId(), user.getRole(), "REFRESH");
 
             return new AuthResponse(accessToken, refreshToken);
         } catch (HttpStatusCodeException e) {

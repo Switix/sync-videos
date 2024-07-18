@@ -32,9 +32,9 @@ const AuthService = {
         }
     },
 
-    register: async (username, password) => {
+    register: async (username, password, color) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/register`, { username, password });
+            const response = await axios.post(`${API_URL}/auth/register`, { username, password, color });
             saveTokens(response.data)
         } catch (error) {
             console.error('Error signing on:', error);

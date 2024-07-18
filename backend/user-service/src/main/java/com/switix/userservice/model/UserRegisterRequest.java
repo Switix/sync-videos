@@ -10,4 +10,5 @@ import lombok.Setter;
 public class UserRegisterRequest {
     private String username;
     private String password;
+    private String color;
 }

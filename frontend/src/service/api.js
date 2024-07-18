@@ -15,7 +15,7 @@ api.interceptors.request.use(
 
         // Set the Authorization header if a token is available
         if (!token) {
-            await authService.register(null, null);
+            await authService.register(null, null, null);
         }
 
         token = authService.getAccessToken();
