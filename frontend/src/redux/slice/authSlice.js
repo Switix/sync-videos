@@ -3,7 +3,11 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     user: null,
     accessToken: null,
-    refreshToken: null
+    refreshToken: null,
+    registeringUser: {
+        username: '',
+        color: '#FFFFFF',
+    },
 };
 
 const authSlice = createSlice({
@@ -28,8 +32,26 @@ const authSlice = createSlice({
         clearRefreshToken: (state) => {
             state.refreshToken = null;
         },
+        setRegisteringUser: (state, action) => {
+            state.registeringUser = action.payload;
+        },
+        clearRegisteringUser: (state) => {
+            state.registeringUser = {
+                username: '',
+                color: '#FFFFFF',
+            };
+        },
     },
 });
 
-export const { setUser, clearUser, setAccessToken, clearAccessToken, setRefreshToken, clearRefreshToken } = authSlice.actions;
+export const {
+    setUser,
+    clearUser,
+    setAccessToken,
+    clearAccessToken,
+    setRefreshToken,
+    clearRefreshToken,
+    setRegisteringUser,
+    clearRegisteringUser
+} = authSlice.actions;
 export default authSlice.reducer;

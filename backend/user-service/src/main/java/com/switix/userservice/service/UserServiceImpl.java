@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         appUser.setUsername(userRegisterRequest.getUsername());
         appUser.setPassword(userRegisterRequest.getPassword());
         appUser.setCreatedAt(LocalDateTime.now());
-        appUser.setUserColor(generateRandomColor());
+        appUser.setUserColor(userRegisterRequest.getColor());
         appUser.setRole(UserRole.USER);
         return userRepository.save(appUser);
     }
