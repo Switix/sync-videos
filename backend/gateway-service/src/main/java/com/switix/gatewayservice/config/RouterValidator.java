@@ -13,6 +13,7 @@ public class RouterValidator {
     public static final List<String> openEndpoints = List.of(
             "/auth/register",
             "/auth/login",
+            "/auth/refresh",
             //temporary because it's impossible to set headers to websocket
             "/ws/**"
     );

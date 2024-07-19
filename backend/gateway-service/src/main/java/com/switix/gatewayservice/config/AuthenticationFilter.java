@@ -7,7 +7,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -29,22 +28,21 @@ public class AuthenticationFilter implements GatewayFilter {
         if (validator.isSecured.test(request)) {
             if (authMissing(request)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "MISSING_TOKEN");
-                //return onError(exchange, HttpStatus.UNAUTHORIZED);
             }
 
-            final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
+            String authorizationHeader = request.getHeaders().getFirst("Authorization");
+
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "INVALID_AUTHORIZATION_HEADER");
+            }
+
+            String token = authorizationHeader.substring(7);
 
             if (jwtUtil.isExpired(token)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "EXPIRED_TOKEN");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "EXPIRED_ACCESS_TOKEN");
             }
         }
         return chain.filter(exchange);
-    }
-
-    private Mono<Void> onError(ServerWebExchange exchange, HttpStatus httpStatus) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
-        return response.setComplete();
     }
 
     private boolean authMissing(ServerHttpRequest request) {

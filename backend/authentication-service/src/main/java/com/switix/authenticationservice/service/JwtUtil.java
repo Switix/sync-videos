@@ -1,6 +1,7 @@
 package com.switix.authenticationservice.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -35,7 +36,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .header()
-                .add("alg", "HS256")
+                .add("alg", "HS384")
                 .add("typ", "JWT")
                 .and()
 
@@ -49,10 +50,23 @@ public class JwtUtil {
 
     public Claims getClaims(String token) {
         return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
+
+    }
+
+    public String getUserId(String token) {
+        return getClaims(token).get("userId", String.class);
+    }
+
+    public String getUserRole(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
     public boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+        try {
+            return getClaims(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 }
 

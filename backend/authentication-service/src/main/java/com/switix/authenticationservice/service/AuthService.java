@@ -6,11 +6,13 @@ import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
 import com.switix.authenticationservice.model.UserVO;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
@@ -62,4 +64,16 @@ public class AuthService {
 
     }
 
+    public AuthResponse refresh(String refreshToken) {
+
+        if (jwtUtil.isExpired(refreshToken)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "EXPIRED_REFRESH_TOKEN");
+        }
+
+        String userId = jwtUtil.getUserId(refreshToken);
+        String userRole = jwtUtil.getUserRole(refreshToken);
+        String newAccessToken = jwtUtil.createToken(userId, userRole, "ACCESS");
+        String newRefreshToken = jwtUtil.createToken(userId, userRole, "REFRESH");
+        return new AuthResponse(newAccessToken, newRefreshToken);
+    }
 }

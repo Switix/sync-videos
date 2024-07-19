@@ -12,8 +12,8 @@ function LandingPage() {
                 const createdRoomId = response.data.id;
                 navigate(`/room/${createdRoomId}`);
             })
-            .catch(error => {
-                console.error('There was an error creating the room!', error);
+            .catch(() => {
+                navigate('/login')
             });
     };
 

@@ -4,6 +4,7 @@ import com.switix.authenticationservice.exception.BadCredentialsException;
 import com.switix.authenticationservice.exception.UserAlreadyExistsException;
 import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
+import com.switix.authenticationservice.model.TokenRefreshRequest;
 import com.switix.authenticationservice.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,15 @@ public class AuthController {
             return ResponseEntity.ok(authService.login(request));
         } catch (BadCredentialsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+        }
+    }
+
+    @PostMapping(value = "/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody TokenRefreshRequest request) {
+        try {
+            return ResponseEntity.ok(authService.refresh(request.getRefreshToken()));
+        } catch (UserAlreadyExistsException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
     }
 }
