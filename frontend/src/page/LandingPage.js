@@ -6,7 +6,7 @@ function LandingPage() {
     const navigate = useNavigate();
 
     const createRoom = () => {
-        api.post('http://localhost:8080/rooms/create', {})
+        api.post('http://26.134.154.97:8080/rooms/create', {})
             .then(response => {
                 console.log('Room created:', response.data);
                 const createdRoomId = response.data.id;

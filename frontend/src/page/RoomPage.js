@@ -57,7 +57,7 @@ function RoomPage() {
 
         const checkRoomExists = async (roomId) => {
             try {
-                const response = await api.get(`http://localhost:8080/rooms/exists/${roomId}`)
+                const response = await api.get(`http://26.134.154.97:8080/rooms/exists/${roomId}`)
                 return response.data;
             } catch (error) {
                 console.error('Error checking room existence', error);
@@ -71,7 +71,7 @@ function RoomPage() {
         };
         const fetchRoomState = async (roomId) => {
             try {
-                const response = await api.get(`http://localhost:8080/rooms/${roomId}/state`)
+                const response = await api.get(`http://26.134.154.97:8080/rooms/${roomId}/state`)
                 const data = response.data;
 
                 setQueue(data.queue);
@@ -164,7 +164,7 @@ function RoomPage() {
                 if (exists) {
                     if (user == null) return;
                     // Connect to WebSocket server
-                    const socket = new SockJS('http://localhost:8080/ws');
+                    const socket = new SockJS('http://26.134.154.97:8080/ws');
                     const client = Stomp.over(socket);
 
                     client.connect({}, (frame) => {
@@ -228,7 +228,7 @@ function RoomPage() {
         if (nextVideo) {
             setCurrentVideo(nextVideo);
             setCurrentSeek(0);
-            api.post(`http://localhost:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
+            api.post(`http://26.134.154.97:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
         };
     };
 
@@ -342,10 +342,20 @@ function RoomPage() {
 
                     </div>
                     {/* title and author under video */}
-                    {currentVideo && (<div className='mt-2 ml-1'>
-                        <p className='text-xl font-bold line-clamp-1'>{currentVideo.title}</p>
-                        <p className='text-md text-neutral-400 line-clamp-1'>{currentVideo.author}</p>
-                    </div>)}
+                    {currentVideo && (
+                        <div className='mt-2 ml-1 flex items-start justify-between'>
+                            <div>
+                                <p className='text-xl font-bold line-clamp-1'>{currentVideo.title}</p>
+                                <p className='text-md text-neutral-400 line-clamp-1'>{currentVideo.author}</p>
+                            </div>
+                            <button
+                                onClick={playNextVideo}
+                                className="ml-4 px-2  bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
+                            >
+                                {'>>'}
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className="w-[36rem] pl-4 flex flex-col space-y-4 ">
                     <div className='relative'>
