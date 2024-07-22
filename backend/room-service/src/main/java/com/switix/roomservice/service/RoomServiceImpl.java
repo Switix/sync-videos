@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,6 +58,17 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void setCurrentSeek(UUID roomId, double currentSeek) {
         getRoomState(roomId).setCurrentSeek(currentSeek);
+    }
+
+    @Override
+    public void removeVideoFormQueue(UUID roomId, String url) {
+        RoomState roomState = getRoomState(roomId);
+        roomState.getQueue().removeIf(video -> video.getUrl().equals(url));
+    }
+
+    @Override
+    public void setQueue(UUID roomId, List<Video> queue) {
+        getRoomState(roomId).setQueue(queue);
     }
 
     @Override

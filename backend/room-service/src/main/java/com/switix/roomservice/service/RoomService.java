@@ -5,6 +5,7 @@ import com.switix.roomservice.model.RoomState;
 import com.switix.roomservice.model.UserDto;
 import com.switix.roomservice.model.Video;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface RoomService {
@@ -26,4 +27,8 @@ public interface RoomService {
     void setIsPlaying(UUID roomId, Boolean isPlaying);
 
     void setCurrentSeek(UUID roomId, double currentSeek);
+
+    void removeVideoFormQueue(UUID roomId, String url);
+
+    void setQueue(UUID roomId, List<Video> queue);
 }

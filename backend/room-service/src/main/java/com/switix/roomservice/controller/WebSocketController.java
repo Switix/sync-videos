@@ -1,5 +1,6 @@
 package com.switix.roomservice.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.switix.roomservice.model.RoomNotification;
@@ -15,6 +16,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -51,6 +54,17 @@ public class WebSocketController {
         return new RoomNotification<>(RoomNotificationType.VIDEO_ADDED, video, userDto);
     }
 
+    @MessageMapping("/room/{roomId}/removeVideo")
+    @SendTo("/topic/room/{roomId}")
+    public RoomNotification<String> removeVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
+        UserDto userDto = extractUserDto(payload.get("user"));
+        String url = payload.get("url").asText();
+        roomService.removeVideoFormQueue(roomId, url);
+
+        return new RoomNotification<>(RoomNotificationType.VIDEO_REMOVED, url, userDto);
+    }
+
     @MessageMapping("/room/{roomId}/pause")
     @SendTo("/topic/room/{roomId}")
     public RoomNotification<Double> playVideo(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
@@ -85,6 +99,21 @@ public class WebSocketController {
         );
     }
 
+    @MessageMapping("/room/{roomId}/updateQueue")
+    @SendTo("/topic/room/{roomId}")
+    public RoomNotification<List<Video>> updateQueue(JsonNode payload, @DestinationVariable("roomId") String roomIdStr) {
+        UUID roomId = UUID.fromString(roomIdStr);
+        UserDto userDto = extractUserDto(payload.get("user"));
+        List<Video> queue = extractQueue(payload.get("queue"));
+
+        roomService.setQueue(roomId, queue);
+        return new RoomNotification<>(
+                RoomNotificationType.VIDEO_MOVED,
+                queue,
+                userDto
+        );
+    }
+
     private UserDto extractUserDto(JsonNode userJson) {
         try {
             return objectMapper.treeToValue(userJson, UserDto.class);
@@ -98,6 +127,16 @@ public class WebSocketController {
         try {
             return objectMapper.treeToValue(videoJson, Video.class);
         } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<Video> extractQueue(JsonNode queueJson) {
+        try {
+            return objectMapper.convertValue(queueJson, new TypeReference<>() {
+            });
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return null;
         }

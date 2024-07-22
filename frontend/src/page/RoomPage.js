@@ -10,6 +10,8 @@ import axios from 'axios'
 import { useSelector } from 'react-redux';
 import QueuedVideo from '../component/QueuedVideo';
 import UserItem from '../component/UserItem';
+import { FaTrash, FaArrowUp, FaArrowDown } from "react-icons/fa";
+
 
 function RoomPage() {
     const { roomId } = useParams();
@@ -103,6 +105,13 @@ function RoomPage() {
                             const videoData = serverNotification.message;
                             setQueue((prevQueue) => [...prevQueue, videoData]);
                             break;
+                        case RoomNotificationType.VIDEO_REMOVED:
+                            roomNotification.setType(RoomNotificationType.VIDEO_REMOVED);
+                            roomNotification.setMessage('Video Removed');
+                            roomNotification.setIssuer(issuer);
+                            const url = serverNotification.message;
+                            setQueue((prevQueue) => prevQueue.filter(video => video.url !== url));
+                            break;
                         case RoomNotificationType.USER_JOINED:
                             roomNotification.setType(RoomNotificationType.USER_JOINED);
                             roomNotification.setMessage("Joined the room");
@@ -144,11 +153,15 @@ function RoomPage() {
                             roomNotification.setMessage(`Video paused with seek: ${serverNotification.message}`);
                             roomNotification.setIssuer(issuer);
                             break;
-                        case RoomNotificationType.SYNC_CHECK:
-                            if (Math.abs(playerRef.current.getCurrentTime() - serverNotification.message) > SEEK_TRESHOLD) {
-                                playerRef.current.seekTo(serverNotification.message, 'seconds', isPlaying)
-                            }
+                        case RoomNotificationType.VIDEO_MOVED:
+                            const queue = serverNotification.message;
+                            setQueue(queue);
+
+                            roomNotification.setType(RoomNotificationType.VIDEO_MOVED);
+                            roomNotification.setMessage(`Moved video`);
+                            roomNotification.setIssuer(issuer);
                             break;
+
                         default:
                             console.warn('Unhandled notification type:', serverNotification.type);
                             break;
@@ -313,6 +326,36 @@ function RoomPage() {
         }
     };
 
+    const removeFromQueue = (url) => {
+        if (stompClientRef.current) {
+            stompClientRef.current.send(`/app/room/${roomId}/removeVideo`, {}, JSON.stringify({ user, url }));
+        }
+    }
+
+    const moveVideo = (url, direction) => {
+        const index = queue.findIndex(video => video.url === url);
+        if (index === -1) return;
+
+        // Ensure the video is not moved out of bounds
+        if ((direction === 'up' && index === 0) || (direction === 'down' && index === queue.length - 1)) {
+            return;
+        }
+
+        const newQueue = Array.from(queue);
+        const [movedVideo] = newQueue.splice(index, 1);
+
+        if (direction === 'up' && index > 0) {
+            newQueue.splice(index - 1, 0, movedVideo);
+        } else if (direction === 'down' && index < newQueue.length) {
+            newQueue.splice(index + 1, 0, movedVideo);
+        }
+
+        if (stompClientRef.current) {
+            stompClientRef.current.send(`/app/room/${roomId}/updateQueue`, {}, JSON.stringify({ user, queue: newQueue }));
+        }
+
+        setQueue(newQueue);
+    };
 
     return (
         <div className="px-4    bg-neutral-900  text-white  flex flex-col">
@@ -373,7 +416,7 @@ function RoomPage() {
                         {/* display predicted video from given url */}
                         {predictedVideo && (
                             <div
-                                className="absolute  rounded-lg shadow-lg overflow-hidden border-8 border-neutral-800 top-full mt-4 w-full hover:cursor-pointer"
+                                className="absolute z-50  rounded-lg shadow-lg overflow-hidden border-8 border-neutral-800 top-full mt-4 w-full hover:cursor-pointer"
                                 onClick={handleVideoSubmit}
                             >
                                 {predictedVideo}
@@ -399,10 +442,27 @@ function RoomPage() {
 
                     <div className='flex-grow'>
                         <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[21rem] overflow-y-auto">
-                            {/* queue list */}
                             {activeTab === 'queue' && queue.length > 0 ? (
                                 queue.map((videoData, index) => (
-                                    <li key={index}  >{<QueuedVideo videoData={videoData} />}</li>
+                                    <li key={index} className="relative group">
+                                        <QueuedVideo videoData={videoData} />
+                                        {index > 0 && (
+                                            <FaArrowUp
+                                                className="absolute top-2 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
+                                                onClick={() => moveVideo(videoData.url, 'up')}
+                                            />
+                                        )}
+                                        {index < queue.length - 1 && (
+                                            <FaArrowDown
+                                                className="absolute top-10 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
+                                                onClick={() => moveVideo(videoData.url, 'down')}
+                                            />
+                                        )}
+                                        <FaTrash
+                                            className="absolute bottom-2 right-2 p-1 cursor-pointer w-6 h-6 text-red-700 hidden group-hover:block hover:text-red-600"
+                                            onClick={() => removeFromQueue(videoData.url)}
+                                        />
+                                    </li>
                                 ))
                             ) : activeTab === 'queue' ? (
                                 <li className="py-2">Queue is empty</li>
