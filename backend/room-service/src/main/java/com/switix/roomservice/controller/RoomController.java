@@ -45,7 +45,7 @@ public class RoomController {
     }
 
     @PostMapping("/{roomId}/state/currentVideo")
-    public ResponseEntity<Void> setCurrentVideoUrl(@PathVariable("roomId") String roomIdStr, @RequestBody Video video) {
+    public ResponseEntity<Void> setCurrentVideo(@PathVariable("roomId") String roomIdStr, @RequestBody Video video) {
         UUID roomId = UUID.fromString(roomIdStr);
         roomService.setCurrentVideo(roomId, video);
         roomService.setCurrentSeek(roomId, 0);

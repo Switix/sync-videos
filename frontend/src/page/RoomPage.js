@@ -161,6 +161,15 @@ function RoomPage() {
                             roomNotification.setMessage(`Moved video`);
                             roomNotification.setIssuer(issuer);
                             break;
+                        case RoomNotificationType.VIDEO_SKIPPED:
+                            if (user.id !== issuer.id) {
+                                playNextVideo();
+                            }
+
+                            roomNotification.setType(RoomNotificationType.VIDEO_SKIPPED);
+                            roomNotification.setMessage(`Skipped video`);
+                            roomNotification.setIssuer(issuer);
+                            break;
 
                         default:
                             console.warn('Unhandled notification type:', serverNotification.type);
@@ -243,6 +252,7 @@ function RoomPage() {
             setCurrentSeek(0);
             api.post(`http://26.134.154.97:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
         };
+        return nextVideo;
     };
 
     const handlePlay = () => {
@@ -332,6 +342,13 @@ function RoomPage() {
         }
     }
 
+    const skipVideo = () => {
+        playNextVideo();
+        if (stompClientRef.current) {
+            stompClientRef.current.send(`/app/room/${roomId}/skipVideo`, {}, JSON.stringify(user));
+        }
+    }
+
     const moveVideo = (url, direction) => {
         const index = queue.findIndex(video => video.url === url);
         if (index === -1) return;
@@ -391,12 +408,16 @@ function RoomPage() {
                                 <p className='text-xl font-bold line-clamp-1'>{currentVideo.title}</p>
                                 <p className='text-md text-neutral-400 line-clamp-1'>{currentVideo.author}</p>
                             </div>
-                            <button
-                                onClick={playNextVideo}
-                                className="ml-4 px-2  bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
-                            >
-                                {'>>'}
-                            </button>
+                            {/* skip button */}
+                            {queue.length > 0 && (
+                                <button
+                                    onClick={skipVideo}
+                                    className="ml-4 px-2  bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
+                                >
+                                    {'>>'}
+                                </button>
+                            )}
+
                         </div>
                     )}
                 </div>

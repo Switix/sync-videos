@@ -5,6 +5,7 @@ export const RoomNotificationType = {
     VIDEO_PLAY: 'VIDEO_PLAY',
     VIDEO_REMOVED: 'VIDEO_REMOVED',
     USER_LEFT: 'USER_LEFT',
-    VIDEO_MOVED: 'VIDEO_MOVED'
+    VIDEO_MOVED: 'VIDEO_MOVED',
+    VIDEO_SKIPPED: 'VIDEO_SKIPPED'
 };
 export default RoomNotificationType;

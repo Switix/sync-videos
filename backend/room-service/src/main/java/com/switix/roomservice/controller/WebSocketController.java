@@ -16,7 +16,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -111,6 +110,16 @@ public class WebSocketController {
                 RoomNotificationType.VIDEO_MOVED,
                 queue,
                 userDto
+        );
+    }
+
+    @MessageMapping("/room/{roomId}/skipVideo")
+    @SendTo("/topic/room/{roomId}")
+    public RoomNotification<String> skipVideo(@Payload UserDto user) {
+        return new RoomNotification<>(
+                RoomNotificationType.VIDEO_SKIPPED,
+                "",
+                user
         );
     }
 
