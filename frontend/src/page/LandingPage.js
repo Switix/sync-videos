@@ -18,10 +18,10 @@ function LandingPage() {
     };
 
     return (
-        <div className="h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center bg-neutral-900">
+        <div className="h-full flex flex-col items-center justify-center bg-neutral-900">
             <button
                 onClick={createRoom}
-                className="px-14 py-7 bg-red-800 hover:bg-red-900 text-neutral-50 font-semibold rounded-full shadow-md focus:outline-none text-5xl"
+                className=" max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl px-14  py-3 bg-red-800 hover:bg-red-900 text-neutral-50 font-semibold rounded-full shadow-md focus:outline-none text-2xl sm:text-3xl md:text-4xl "
             >
                 Create Room
             </button>
