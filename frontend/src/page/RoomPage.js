@@ -375,159 +375,143 @@ function RoomPage() {
     };
 
     return (
-        <div className="px-4    bg-neutral-900  text-white  flex flex-col">
-            <div className=" flex  ">
-                <div className="w-[calc(100%-18rem)] pr-4 ">
-                    <div className="relative bg-black rounded-3xl " style={{ paddingTop: '56.25%' }}>
-                        {currentVideo ? (
-                            <ReactPlayer
-                                ref={playerRef}
-                                url={currentVideo.url}
-                                controls
-                                playing={isPlaying}
-                                width="100%"
-                                height="100%"
-                                className="absolute top-0 left-0 w-full h-full "
-                                onEnded={playNextVideo}
-                                onPlay={handlePlay}
-                                onPause={handlePause}
-                                onStart={handleStart}
-                                onReady={handleReady}
-                            />
-                        ) : (
-                            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-stone-500 text-4xl">
-                                <p>No video</p>
-                            </div>
-                        )}
-
+        <div className="sm:px-4 bg-neutral-900 text-white flex flex-col sm:flex-row">
+        <div className="w-full sm:w-[calc(100%-18rem)] pr-0 sm:pr-4">
+            <div className="relative bg-black rounded-3xl mb-4 sm:mb-0" style={{ paddingTop: '56.25%' }}>
+                {currentVideo ? (
+                    <ReactPlayer
+                        ref={playerRef}
+                        url={currentVideo.url}
+                        controls
+                        playing={isPlaying}
+                        width="100%"
+                        height="100%"
+                        className="absolute top-0 left-0 w-full h-full"
+                        onEnded={playNextVideo}
+                        onPlay={handlePlay}
+                        onPause={handlePause}
+                        onStart={handleStart}
+                        onReady={handleReady}
+                    />
+                ) : (
+                    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-stone-500 text-4xl">
+                        <p>No video</p>
                     </div>
-                    {/* title and author under video */}
-                    {currentVideo && (
-                        <div className='mt-2 ml-1 flex items-start justify-between'>
-                            <div>
-                                <p className='text-xl font-bold line-clamp-1'>{currentVideo.title}</p>
-                                <p className='text-md text-neutral-400 line-clamp-1'>{currentVideo.author}</p>
-                            </div>
-                            {/* skip button */}
-                            {queue.length > 0 && (
-                                <button
-                                    onClick={skipVideo}
-                                    className="ml-4 px-2  bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
-                                >
-                                    {'>>'}
-                                </button>
-                            )}
-
-                        </div>
+                )}
+            </div>
+            {currentVideo && (
+                <div className="mt-2 px-4 sm:px-0 ml-1 flex items-start justify-between">
+                    <div>
+                        <p className="text-xl font-bold line-clamp-1">{currentVideo.title}</p>
+                        <p className="text-md text-neutral-400 line-clamp-1">{currentVideo.author}</p>
+                    </div>
+                    {queue.length > 0 && (
+                        <button
+                            onClick={skipVideo}
+                            className="ml-4 px-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
+                        >
+                            {'>>'}
+                        </button>
                     )}
                 </div>
-                <div className="w-[36rem] pl-4 flex flex-col space-y-4 ">
-                    <div className='relative'>
-                        {/* room name */}
-                        <h2 className="text-2xl font-bold mb-4">Room: {roomId}</h2>
-                        {/* url input */}
-                        <input
-                            type="text"
-                            value={videoUrl}
-                            onChange={handleVideoUrlTyping}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Enter YouTube URL"
-                            className="w-full p-2 rounded bg-neutral-800 text-white border border-neutral-700 focus:outline-none"
-                        />
-                        {/* display predicted video from given url */}
-                        {predictedVideo && (
-                            <div
-                                className="absolute z-50  rounded-lg shadow-lg overflow-hidden border-8 border-neutral-800 top-full mt-4 w-full hover:cursor-pointer"
-                                onClick={handleVideoSubmit}
-                            >
-                                {predictedVideo}
-                            </div>
-                        )}
+            )}
+        </div>
+        <div className="w-full sm:w-[36rem] px-4 sm:px-0  flex flex-col space-y-4">
+            <div className="relative">
+                <h2 className="text-2xl font-bold mb-4 hidden sm:block">Room: {roomId}</h2>
+                <input
+                    type="text"
+                    value={videoUrl}
+                    onChange={handleVideoUrlTyping}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Enter YouTube URL"
+                    className="w-full p-2 mt-2 sm:mt-0 rounded bg-neutral-800 text-white border border-neutral-700 focus:outline-none"
+                />
+                {predictedVideo && (
+                    <div
+                        className="absolute z-50 rounded-lg shadow-lg overflow-hidden border-8 border-neutral-800 top-full mt-4 w-full hover:cursor-pointer"
+                        onClick={handleVideoSubmit}
+                    >
+                        {predictedVideo}
                     </div>
-
-                    {/* buttons to swap lists */}
-                    <div className="flex justify-around">
-                        <button
-                            onClick={() => setActiveTab('queue')}
-                            className={`  w-36 py-2 text-md font-medium text-white text-center rounded  hover:bg-green-700 ${activeTab === 'queue' ? 'bg-green-600' : 'bg-neutral-700'}`}
-                        >
-                            Queue
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('notifications')}
-                            className={` w-36 py-2 text-md font-medium text-white text-center rounded-md  hover:bg-green-700 ${activeTab === 'notifications' ? 'bg-green-600' : 'bg-neutral-700'}`}
-                        >
-                            Notifications
-                        </button>
-                    </div>
-
-                    <div className='flex-grow'>
-                        <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[21rem] overflow-y-auto">
-                            {activeTab === 'queue' && queue.length > 0 ? (
-                                queue.map((videoData, index) => (
-                                    <li key={index} className="relative group">
-                                        <QueuedVideo videoData={videoData} />
-                                        {index > 0 && (
-                                            <FaArrowUp
-                                                className="absolute top-2 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
-                                                onClick={() => moveVideo(videoData.url, 'up')}
-                                            />
-                                        )}
-                                        {index < queue.length - 1 && (
-                                            <FaArrowDown
-                                                className="absolute top-10 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
-                                                onClick={() => moveVideo(videoData.url, 'down')}
-                                            />
-                                        )}
-                                        <FaTrash
-                                            className="absolute bottom-2 right-2 p-1 cursor-pointer w-6 h-6 text-red-700 hidden group-hover:block hover:text-red-600"
-                                            onClick={() => removeFromQueue(videoData.url)}
-                                        />
-                                    </li>
-                                ))
-                            ) : activeTab === 'queue' ? (
-                                <li className="py-2">Queue is empty</li>
-                            ) : null}
-
-                            {/* notifications list */}
-                            {activeTab === 'notifications' ? (
-                                notifications.map((notification, index) => (
-                                    <li key={index} className="mb-2 last:mb-0">
-                                        <div>
-                                            {`${notification.type} [`}
-                                            <span style={{ color: notification.issuer.userColor }}>{notification.issuer.username}</span>
-                                            {`]: ${notification.message}`}
-                                        </div>
-                                    </li>
-                                ))
-
-                            ) : activeTab === 'notifications' ? (
-                                <li className="py-2">No notifications</li>
-                            ) : null}
-                        </ul>
-                    </div>
-
-                    {/* user list */}
-                    <div className="flex flex-col !mb-[3.75rem] ">
-                        <div className='w-full'>
-                            <h3 className="flex items-center justify-center text-xl font-bold mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2 text-red-500">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                </svg>
-                                {roomUsers.length}
-                            </h3>
-                            <ul className="p-2 rounded max-h-44 overflow-y-auto grid grid-cols-2 gap-2">
-                                {roomUsers.map((user, index) => (
-                                    <li key={index}>
-                                        <UserItem user={user} />
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
+                )}
+            </div>
+            <div className="flex justify-around">
+                <button
+                    onClick={() => setActiveTab('queue')}
+                    className={`w-36 py-2 text-md font-medium text-white text-center rounded ${activeTab === 'queue' ? 'bg-green-600' : 'bg-neutral-700'} hover:bg-green-700`}
+                >
+                    Queue
+                </button>
+                <button
+                    onClick={() => setActiveTab('notifications')}
+                    className={`w-36 py-2 text-md font-medium text-white text-center rounded-md ${activeTab === 'notifications' ? 'bg-green-600' : 'bg-neutral-700'} hover:bg-green-700`}
+                >
+                    Notifications
+                </button>
+            </div>
+            <div className="flex-grow ">
+                <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[21rem] overflow-y-auto">
+                    {activeTab === 'queue' && queue.length > 0 ? (
+                        queue.map((videoData, index) => (
+                            <li key={index} className="relative group">
+                                <QueuedVideo videoData={videoData} />
+                                {index > 0 && (
+                                    <FaArrowUp
+                                        className="absolute top-2 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
+                                        onClick={() => moveVideo(videoData.url, 'up')}
+                                    />
+                                )}
+                                {index < queue.length - 1 && (
+                                    <FaArrowDown
+                                        className="absolute top-10 right-2 p-1 cursor-pointer w-6 h-6 hidden group-hover:block text-gray-400 hover:text-gray-300"
+                                        onClick={() => moveVideo(videoData.url, 'down')}
+                                    />
+                                )}
+                                <FaTrash
+                                    className="absolute bottom-2 right-2 p-1 cursor-pointer w-6 h-6 text-red-700 hidden group-hover:block hover:text-red-600"
+                                    onClick={() => removeFromQueue(videoData.url)}
+                                />
+                            </li>
+                        ))
+                    ) : activeTab === 'queue' ? (
+                        <li className="py-2">Queue is empty</li>
+                    ) : null}
+                    {activeTab === 'notifications' ? (
+                        notifications.map((notification, index) => (
+                            <li key={index} className="mb-2 last:mb-0">
+                                <div>
+                                    {`${notification.type} [`}
+                                    <span style={{ color: notification.issuer.userColor }}>{notification.issuer.username}</span>
+                                    {`]: ${notification.message}`}
+                                </div>
+                            </li>
+                        ))
+                    ) : activeTab === 'notifications' ? (
+                        <li className="py-2">No notifications</li>
+                    ) : null}
+                </ul>
+            </div>
+            <div className="flex flex-col mb-2">
+                <div className="w-full">
+                    <h3 className="flex items-center justify-center text-xl font-bold mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-2 text-red-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                        </svg>
+                        {roomUsers.length}
+                    </h3>
+                    <ul className=" mb-4 rounded max-h-44 overflow-y-auto grid grid-cols-2 gap-2">
+                        {roomUsers.map((user, index) => (
+                            <li key={index}>
+                                <UserItem user={user} />
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
         </div>
+    </div>
+    
     );
 }
 

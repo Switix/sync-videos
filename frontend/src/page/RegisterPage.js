@@ -49,7 +49,7 @@ function RegisterPage() {
     };
 
     return (
-        <div className="h-full flex items-center justify-center ">
+        <div className="px-8 sm:px-0 h-full flex items-center justify-center ">
             <div className="bg-neutral-800 p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-white mb-6">Register</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
