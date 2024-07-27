@@ -103,7 +103,13 @@ function RoomPage() {
                             roomNotification.setIssuer(issuer);
 
                             const videoData = serverNotification.message;
-                            setQueue((prevQueue) => [...prevQueue, videoData]);
+                            setQueue(prevQueue => {
+                                if (prevQueue) {
+                                    return [...prevQueue, videoData];
+                                } else {
+                                    return [videoData];
+                                }
+                            });
                             break;
                         case RoomNotificationType.VIDEO_REMOVED:
                             roomNotification.setType(RoomNotificationType.VIDEO_REMOVED);
@@ -247,15 +253,17 @@ function RoomPage() {
 
     const playNextVideo = () => {
         setQueue(prevQueue => {
-            const nextQueue = [...prevQueue];
-            const nextVideo = nextQueue.shift();
+            if (!prevQueue || prevQueue.length === 0) {
+                return prevQueue;
+            }
+            const [nextVideo, ...nextQueue] = prevQueue;
+
 
             if (nextVideo) {
                 setCurrentVideo(nextVideo);
                 setCurrentSeek(0);
                 api.post(`http://188.47.81.23:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
             }
-
             return nextQueue;
         });
     };
@@ -382,7 +390,6 @@ function RoomPage() {
     return (
         <div className="sm:px-4 bg-neutral-900 text-white flex flex-col sm:flex-row">
             <div className="w-full sm:w-[calc(100%-18rem)] pr-0 sm:pr-4">
-                <button onClick={() => console.log(queue)}>test</button>
 
                 <div className="relative bg-black rounded-3xl mb-4 sm:mb-0" style={{ paddingTop: '56.25%' }}>
                     {currentVideo ? (
@@ -413,7 +420,7 @@ function RoomPage() {
                             <p className="text-xl font-bold line-clamp-1">{currentVideo.title}</p>
                             <p className="text-md text-neutral-400 line-clamp-1">{currentVideo.author}</p>
                         </div>
-                        {queue.length > 0 && (
+                        {queue && queue.length > 0 && (
                             <button
                                 onClick={skipVideo}
                                 className="ml-4 px-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300"
@@ -460,7 +467,7 @@ function RoomPage() {
                 </div>
                 <div className="flex-grow ">
                     <ul ref={listRef} className="bg-neutral-800 space-y-2 p-2 rounded max-h-[21rem] overflow-y-auto">
-                        {activeTab === 'queue' && queue.length > 0 ? (
+                        {activeTab === 'queue' && queue && queue.length > 0 ? (
                             queue.map((videoData, index) => (
                                 <li key={index} className="relative group">
                                     <QueuedVideo videoData={videoData} />

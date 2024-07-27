@@ -27,7 +27,7 @@ function RegisterPage() {
             return;
         }
         setError('');
-        dispatch(clearRegisteringUser);
+        dispatch(clearRegisteringUser());
 
         try {
             await authService.register(registeringUser.username, password, registeringUser.color);

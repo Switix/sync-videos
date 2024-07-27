@@ -2,7 +2,7 @@ package com.switix.userservice.service;
 
 import com.switix.userservice.exception.UserNotfoundException;
 import com.switix.userservice.model.*;
-import com.switix.userservice.repository.UserRepository;
+import com.switix.userservice.repository.AppUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final AppUserRepository userRepository;
 
     @Override
     public AppUser save(UserRegisterRequest userRegisterRequest) {
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public UserDto findById(String id) {
 
         AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotfoundException("User not found"));

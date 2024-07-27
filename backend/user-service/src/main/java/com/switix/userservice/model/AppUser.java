@@ -1,29 +1,33 @@
 package com.switix.userservice.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Document(collection = "app_users")
 @Getter
 @Setter
 @NoArgsConstructor
 public class AppUser {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Field(targetType = FieldType.OBJECT_ID)
+    private String id;
 
     private String username;
     private String password;
     private String userColor;
-    @Enumerated(EnumType.STRING)
+
+    @Field(targetType = FieldType.STRING)
     private UserRole role;
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime createdAt;
-
 }

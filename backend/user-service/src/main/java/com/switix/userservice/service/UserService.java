@@ -9,7 +9,7 @@ import com.switix.userservice.model.UserVO;
 public interface UserService {
     AppUser save(UserRegisterRequest userRegisterRequest);
 
-    UserDto findById(Long id);
+    UserDto findById(String id);
 
     Boolean existsByUsername(String username);
 

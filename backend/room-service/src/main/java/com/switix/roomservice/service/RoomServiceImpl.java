@@ -13,66 +13,65 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
-    private final Map<UUID, RoomState> roomStates = new HashMap<>();
+    private final Map<String, RoomState> roomStates = new HashMap<>();
 
     public RoomServiceImpl(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 
     @Override
-    public RoomState getRoomState(UUID roomId) {
+    public RoomState getRoomState(String roomId) {
         RoomState roomState = roomStates.computeIfAbsent(roomId, k -> new RoomState());
         updateCurrentSeek(roomState);
         return roomState;
     }
 
     @Override
-    public void addUserToRoom(UUID roomId, UserDto user) {
+    public void addUserToRoom(String roomId, UserDto user) {
         getRoomState(roomId).getUsers().add(user);
     }
 
     @Override
-    public void removeUserFromRoom(UUID roomId, UserDto user) {
+    public void removeUserFromRoom(String roomId, UserDto user) {
         getRoomState(roomId).getUsers()
                 .removeIf(u -> u.getId().equals(user.getId()));
     }
 
     @Override
-    public void setCurrentVideo(UUID roomId, Video currentVideo) {
+    public void setCurrentVideo(String roomId, Video currentVideo) {
         RoomState roomState = getRoomState(roomId);
         roomState.setCurrentVideo(currentVideo);
         roomState.getQueue().removeIf(video -> video.getUrl().equals(currentVideo.getUrl()));
     }
 
     @Override
-    public void setIsPlaying(UUID roomId, Boolean isPlaying) {
+    public void setIsPlaying(String roomId, Boolean isPlaying) {
         getRoomState(roomId).setIsPlaying(isPlaying);
     }
 
     @Override
-    public void setCurrentSeek(UUID roomId, double currentSeek) {
+    public void setCurrentSeek(String roomId, double currentSeek) {
         getRoomState(roomId).setCurrentSeek(currentSeek);
     }
 
     @Override
-    public void removeVideoFormQueue(UUID roomId, String url) {
+    public void removeVideoFormQueue(String roomId, String url) {
         RoomState roomState = getRoomState(roomId);
         roomState.getQueue().removeIf(video -> video.getUrl().equals(url));
     }
 
     @Override
-    public void setQueue(UUID roomId, List<Video> queue) {
+    public void setQueue(String roomId, List<Video> queue) {
         getRoomState(roomId).setQueue(queue);
     }
 
     @Override
-    public void addVideoToQueue(UUID roomId, Video video) {
+    public void addVideoToQueue(String roomId, Video video) {
         getRoomState(roomId).getQueue().add(video);
     }
 
@@ -84,7 +83,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room getRoomById(UUID id) {
+    public Room getRoomById(String id) {
         return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException("Room not found"));
     }
 

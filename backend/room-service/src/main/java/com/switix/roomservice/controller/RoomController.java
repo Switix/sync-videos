@@ -9,8 +9,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/rooms")
 @AllArgsConstructor
@@ -27,8 +25,7 @@ public class RoomController {
     @GetMapping("/exists/{roomId}")
     public ResponseEntity<Boolean> roomExists(@PathVariable("roomId") String roomIdStr) {
         try {
-            UUID roomId = UUID.fromString(roomIdStr);
-            roomService.getRoomById(roomId);
+            roomService.getRoomById(roomIdStr);
             return ResponseEntity.ok(true);
         } catch (IllegalArgumentException | RoomNotFoundException e) {
             return ResponseEntity.ok(false);
@@ -37,18 +34,15 @@ public class RoomController {
 
     @GetMapping("/{roomId}/state")
     public ResponseEntity<RoomState> getRoomState(@PathVariable("roomId") String roomIdStr) {
-
-        UUID roomId = UUID.fromString(roomIdStr);
-        RoomState roomState = roomService.getRoomState(roomId);
+        RoomState roomState = roomService.getRoomState(roomIdStr);
         return ResponseEntity.ok(roomState);
 
     }
 
     @PostMapping("/{roomId}/state/currentVideo")
     public ResponseEntity<Void> setCurrentVideo(@PathVariable("roomId") String roomIdStr, @RequestBody Video video) {
-        UUID roomId = UUID.fromString(roomIdStr);
-        roomService.setCurrentVideo(roomId, video);
-        roomService.setCurrentSeek(roomId, 0);
+        roomService.setCurrentVideo(roomIdStr, video);
+        roomService.setCurrentSeek(roomIdStr, 0);
         return ResponseEntity.ok().build();
 
     }

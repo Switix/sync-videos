@@ -6,29 +6,28 @@ import com.switix.roomservice.model.UserDto;
 import com.switix.roomservice.model.Video;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface RoomService {
-    void addVideoToQueue(UUID roomId, Video video);
+    void addVideoToQueue(String roomId, Video video);
 
 
-    RoomState getRoomState(UUID roomId);
+    RoomState getRoomState(String roomId);
 
     Room createRoom();
 
-    Room getRoomById(UUID id);
+    Room getRoomById(String id);
 
-    void addUserToRoom(UUID roomId, UserDto user);
+    void addUserToRoom(String roomId, UserDto user);
 
-    void removeUserFromRoom(UUID roomId, UserDto user);
+    void removeUserFromRoom(String roomId, UserDto user);
 
-    void setCurrentVideo(UUID roomId, Video currentVideo);
+    void setCurrentVideo(String roomId, Video currentVideo);
 
-    void setIsPlaying(UUID roomId, Boolean isPlaying);
+    void setIsPlaying(String roomId, Boolean isPlaying);
 
-    void setCurrentSeek(UUID roomId, double currentSeek);
+    void setCurrentSeek(String roomId, double currentSeek);
 
-    void removeVideoFormQueue(UUID roomId, String url);
+    void removeVideoFormQueue(String roomId, String url);
 
-    void setQueue(UUID roomId, List<Video> queue);
+    void setQueue(String roomId, List<Video> queue);
 }
