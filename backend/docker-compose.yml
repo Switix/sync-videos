@@ -1,0 +1,73 @@
+services:
+
+  user-service:
+    image: switix/sync-videos-user-service:1.0-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8081:8081"
+    networks:
+      - sync-videos-network
+    depends_on:
+      - discovery-service
+      - mongodb
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://discovery-service:8761/eureka
+      SPRING.DATA.MONGODB.URI: mongodb://mongodb:27017/user_db
+
+  room-service:
+    image: switix/sync-videos-room-service:1.0-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8082:8082"
+    networks:
+      - sync-videos-network
+    depends_on:
+      - discovery-service
+      - mongodb
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://discovery-service:8761/eureka
+      SPRING.DATA.MONGODB.URI: mongodb://mongodb:27017/room_db
+
+  authentication-service:
+    image: switix/sync-videos-authentication-service:1.0-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "9001:9001"
+    networks:
+      - sync-videos-network
+    depends_on:
+      - discovery-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://discovery-service:8761/eureka
+
+
+  gateway-service:
+    image: switix/sync-videos-gateway-service:1.0-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8080:8080"
+    networks:
+      - sync-videos-network
+    depends_on:
+      - discovery-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://discovery-service:8761/eureka
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    networks:
+      - sync-videos-network
+
+  discovery-service:
+    image: switix/sync-videos-discovery-service:1.0-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8761:8761"
+    networks:
+      - sync-videos-network
+
+
+networks:
+  sync-videos-network:
