@@ -4,7 +4,7 @@ import { decodeToken } from 'react-jwt';
 import { setUser, clearUser, setAccessToken, clearAccessToken, setRefreshToken, clearRefreshToken } from '../redux/slice/authSlice';
 
 
-const API_URL = 'http://188.47.81.23:8080';
+const API_URL = 'http://188.47.108.145:8080';
 
 class AuthService {
 
@@ -12,7 +12,7 @@ class AuthService {
         store.dispatch(setAccessToken(tokens.accessToken));
         store.dispatch(setRefreshToken(tokens.refreshToken));
         const claims = decodeToken(tokens.accessToken);
-        axios.get(`http://188.47.81.23:8080/users/${claims.userId}`, {
+        axios.get(`http://188.47.108.145:8080/users/${claims.userId}`, {
             headers: {
                 Authorization: `Bearer ${tokens.accessToken}`,
             },

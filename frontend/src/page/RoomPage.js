@@ -59,7 +59,7 @@ function RoomPage() {
 
         const checkRoomExists = async (roomId) => {
             try {
-                const response = await api.get(`http://188.47.81.23:8080/rooms/exists/${roomId}`)
+                const response = await api.get(`http://188.47.108.145:8080/rooms/exists/${roomId}`)
                 return response.data;
             } catch (error) {
                 console.error('Error checking room existence', error);
@@ -73,7 +73,7 @@ function RoomPage() {
         };
         const fetchRoomState = async (roomId) => {
             try {
-                const response = await api.get(`http://188.47.81.23:8080/rooms/${roomId}/state`)
+                const response = await api.get(`http://188.47.108.145:8080/rooms/${roomId}/state`)
                 const data = response.data;
 
                 setQueue(data.queue);
@@ -192,7 +192,7 @@ function RoomPage() {
                 if (exists) {
                     if (user == null) return;
                     // Connect to WebSocket server
-                    const socket = new SockJS('http://188.47.81.23:8080/ws');
+                    const socket = new SockJS('http://188.47.108.145:8080/ws');
                     const client = Stomp.over(socket);
 
                     client.connect({}, (frame) => {
@@ -262,7 +262,7 @@ function RoomPage() {
             if (nextVideo) {
                 setCurrentVideo(nextVideo);
                 setCurrentSeek(0);
-                api.post(`http://188.47.81.23:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
+                api.post(`http://188.47.108.145:8080/rooms/${roomId}/state/currentVideo`, nextVideo)
             }
             return nextQueue;
         });
