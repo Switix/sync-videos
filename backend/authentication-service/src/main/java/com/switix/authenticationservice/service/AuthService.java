@@ -1,6 +1,7 @@
 package com.switix.authenticationservice.service;
 
 import com.switix.authenticationservice.exception.BadCredentialsException;
+import com.switix.authenticationservice.exception.ExpiredRefreshToken;
 import com.switix.authenticationservice.exception.UserAlreadyExistsException;
 import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
@@ -8,11 +9,9 @@ import com.switix.authenticationservice.model.UserVO;
 import com.switix.authenticationservice.proxy.UserProxy;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
@@ -68,7 +67,7 @@ public class AuthService {
     public AuthResponse refresh(String refreshToken) {
 
         if (jwtUtil.isExpired(refreshToken)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "EXPIRED_REFRESH_TOKEN");
+            throw new ExpiredRefreshToken("EXPIRED_REFRESH_TOKEN");
         }
 
         String userId = jwtUtil.getUserId(refreshToken);

@@ -1,6 +1,7 @@
 package com.switix.authenticationservice.controller;
 
 import com.switix.authenticationservice.exception.BadCredentialsException;
+import com.switix.authenticationservice.exception.ExpiredRefreshToken;
 import com.switix.authenticationservice.exception.UserAlreadyExistsException;
 import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
@@ -44,7 +45,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> refresh(@RequestBody TokenRefreshRequest request) {
         try {
             return ResponseEntity.ok(authService.refresh(request.getRefreshToken()));
-        } catch (UserAlreadyExistsException e) {
+        } catch (ExpiredRefreshToken e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage(), e);
         }
     }

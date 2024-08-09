@@ -1,6 +1,7 @@
 package com.switix.authenticationservice;
 
 import com.switix.authenticationservice.exception.BadCredentialsException;
+import com.switix.authenticationservice.exception.ExpiredRefreshToken;
 import com.switix.authenticationservice.exception.UserAlreadyExistsException;
 import com.switix.authenticationservice.model.AuthRequest;
 import com.switix.authenticationservice.model.AuthResponse;
@@ -14,10 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -137,9 +136,8 @@ class AuthServiceTests {
 
         // when & then
         assertThatThrownBy(() -> authService.refresh(expiredToken))
-                .isInstanceOf(ResponseStatusException.class)
-                .hasMessageContaining("EXPIRED_REFRESH_TOKEN")
-                .hasFieldOrPropertyWithValue("status", HttpStatus.UNAUTHORIZED);
+                .isInstanceOf(ExpiredRefreshToken.class)
+                .hasMessageContaining("EXPIRED_REFRESH_TOKEN");
     }
 
     @Test
