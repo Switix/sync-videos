@@ -47,7 +47,11 @@ This project consists of several independent services, each responsible for diff
 
 ## 🎥 How It Works
 Watch the demo video to see the application in action:
-[![Watch the video](https://raw.githubusercontent.com/Switix/sync-videos/main/thumbnail.jpg)](https://raw.githubusercontent.com/Switix/sync-videos/main/demo.mp4)
+
+
+https://github.com/user-attachments/assets/1ad76120-74d6-4019-ae9b-87ca9ba2cdde
+
+
 
 ## 🎥 Future Improvements
 - Integrate Chat Functionality in Rooms:
@@ -57,7 +61,7 @@ Watch the demo video to see the application in action:
 
   - Implement a feature to list available rooms that users can join. Include options for joining public rooms or entering a password for private rooms.
 
-## ⚠️ Limitations
+## ⚠ Limitations
 This project is a demonstration of my skills and is not intended for production use. It focuses on architectural design and code quality, rather than being a fully-featured, production-ready application.
 
 ## 🎨 Inspiration
