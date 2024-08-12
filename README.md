@@ -49,7 +49,7 @@ This project consists of several independent services, each responsible for diff
 Watch the demo video to see the application in action:
 [![Watch the video](https://raw.githubusercontent.com/Switix/sync-videos/main/thumbnail.jpg)](https://raw.githubusercontent.com/Switix/sync-videos/main/demo.mp4)
 
-## 🛠️ Future Improvements
+## 🎥 Future Improvements
 - Integrate Chat Functionality in Rooms:
 
   - Add a feature that allows users to send and receive messages within a room.
